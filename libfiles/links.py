@@ -7,7 +7,7 @@ Created on Mon Dec 28 14:16:59 2020
 
 import numpy as np
 import pygame
-from functions import OMtopx,norm
+from .functions import OMtopx,norm
 
 class Link():
     def __init__(self,m1,m2):

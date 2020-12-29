@@ -5,12 +5,12 @@ Created on Mon Dec 28 21:07:02 2020
 @author: jimen
 """
 
-from mass import Mass
-from links import LinkCsteF,LinkRigid,LinkSpring
-from world import World
-from app import App
-from functions import norm
-import values
+from libfiles.mass import Mass
+from libfiles.links import LinkCsteF,LinkRigid,LinkSpring
+from libfiles.world import World
+from libfiles.app import App
+from libfiles.functions import norm
+import libfiles.values
 
 g=9.81        
 
@@ -33,13 +33,16 @@ dist=norm(m2.OM-m3.OM)
 l=LinkRigid(m2,m3)
 
 
-monde=World(6,7)
+monde=World(6,9)
+#monde.g=0.1
 monde.add_Mass(m1)
 monde.add_Mass(m2)
 monde.add_Mass(m3)
+
 
 
 app=App()
 app.add_World(monde)
 app.set_speed(0.125)
 app.run()
+quit()

@@ -6,7 +6,7 @@ Created on Mon Dec 28 14:23:08 2020
 """
 
 import pygame
-from functions import OMtopx,mtopx
+from .functions import OMtopx,mtopx
 
         
 class Circle():

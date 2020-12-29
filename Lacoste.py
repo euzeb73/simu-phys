@@ -5,11 +5,11 @@ Created on Mon Dec 28 21:07:02 2020
 @author: jimen
 """
 
-from mass import Mass
-from links import LinkCsteF,LinkRigid,LinkSpring
-from world import World
-from app import App
-import values
+from libfiles.mass import Mass
+from libfiles.links import LinkCsteF,LinkRigid,LinkSpring
+from libfiles.world import World
+from libfiles.app import App
+import libfiles.values
 
 
 k=10

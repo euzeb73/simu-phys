@@ -4,7 +4,7 @@ Created on Mon Dec 28 14:19:06 2020
 
 @author: jimen
 """
-import values
+from . import values
 
 def mtopx(dinm):
     ''' Convertit les distances en m vers des pixels'''

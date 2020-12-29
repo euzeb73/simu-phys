@@ -7,10 +7,10 @@ Created on Mon Dec 28 14:26:03 2020
 
 import pygame
 import numpy as np
-from mass import Mass
-from links import LinkCsteF
-from functions import norm
-import values
+from .mass import Mass
+from .links import LinkCsteF
+from .functions import norm
+from . import values
 
 class World():
     def __init__(self,sizex,sizey):

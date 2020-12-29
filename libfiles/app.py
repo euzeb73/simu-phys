@@ -5,7 +5,7 @@ Created on Mon Dec 28 21:01:13 2020
 @author: jimen
 """
 import pygame
-import values
+from . import values
 
 class Font():
     def __init__(self,font=None,size=48):
