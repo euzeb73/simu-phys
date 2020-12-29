@@ -54,6 +54,8 @@ class App():
         values.XMAX=values.XSHIFT+width
         values.YMAX=values.YSHIFT+height
         self.world.rect=pygame.Rect(values.XSHIFT,values.YSHIFT,width,height)
+#        #On sauvegarde les CI
+#        self.world.set_CI()
         
     def set_speed(self,speed):
         self.speed=speed
@@ -73,6 +75,7 @@ class App():
         #Prépare les affichages text
         self.fontbig.addtext('Pause')
         self.fontbig.addtext('Press ESC to QUIT','Quit')
+        self.fontbig.addtext('Press R to RESTART','Restart')
         self.fontsmall.addtext('START/PAUSE : ENTER','Enter',(0,0,255))
         self.fontsmall.addtext('Speed up: KUP','Up',(0,0,255))
         self.fontsmall.addtext('Speed down: KDOWN','Down',(0,0,255))
@@ -100,6 +103,8 @@ class App():
                         paused=not(paused)
                     if event.key==pygame.K_ESCAPE and paused:
                         stopped = True
+                    if event.key==pygame.K_r and paused:
+                        self.world.restart()
                     if event.key==pygame.K_UP:
                         self.FPS*=1.5
                         self.set_speed(self.speed*2)
@@ -120,6 +125,10 @@ class App():
                 surface=self.fontbig.textdic['Quit']
                 w,h=surface.get_size()
                 self.window.blit(surface,(centerx-w//2,bottom-2*h))
+                surface=self.fontbig.textdic['Restart']
+                w,h=surface.get_size()
+                self.window.blit(surface,(centerx-w//2,top+h))
+   
    
             
             #Affichage des commandes et de la vitesse                        

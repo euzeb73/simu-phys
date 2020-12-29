@@ -23,6 +23,7 @@ class Link():
         self.update()
     def update(self):
         pass
+        
     def draw(self,screen):
         if self.visible:
             start=OMtopx(self.mass1.OM)
@@ -36,6 +37,7 @@ class LinkRigid(Link):
         
         super().__init__(m1,m2)
         self.rigid=True
+        self.length=norm(self.mass1.OM-self.mass2.OM)
     def update(self):
         '''Recalcule vG et omega à partir de v1 et v2
         elimine les problèmes'''

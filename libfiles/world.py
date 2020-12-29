@@ -31,7 +31,13 @@ class World():
         self.gravity=True
         self.earth=Mass(1e24)
         self.earth.visible=False
-        
+                
+    def restart(self):
+        for mass in self.mass:
+            mass.restart()
+        for link in self.link:
+            link.update()
+    
     def add_Mass(self,m):
         '''Ajoute la masse et les liens qui lui sont associés au monde'''
         self.mass.append(m)
@@ -124,7 +130,19 @@ class World():
             
         #Mise à jour des forces: recalculées avec les positions
         for link in self.link:
-            if not link.rigid: #☻inutile d'update les rigids
+            if link.rigid: #les rigids on vérifie juste qu'ils grandissent pas.
+                x1=link.mass1.OM
+                x2=link.mass2.OM
+                taille=norm(x2-x1)
+                #Ce qu'il y a à enlever est réparti entre les deux masses prop à la masse
+                m1=link.mass1.m
+                m2=link.mass2.m
+                mT=m1+m2
+                u=pygame.math.Vector2.normalize(x2-x1) #uM1M2
+                link.mass1.OM=x1+(m1*(taille-link.length)/mT)*u
+                link.mass2.OM=x2-(m2*(taille-link.length)/mT)*u
+                
+            else: #les autres on les update
                 link.update()
                 
     def draw(self):
