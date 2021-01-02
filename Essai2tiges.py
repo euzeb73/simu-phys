@@ -5,11 +5,11 @@ Created on Mon Dec 28 21:07:02 2020
 @author: jimen
 """
 
-from libfiles.mass import Mass
-from libfiles.links import LinkCsteF,LinkRigid,LinkSpring
-from libfiles.world import World
-from libfiles.app import App
-import libfiles.values
+from simphys.mass import Mass
+from simphys.links import LinkCsteF,LinkRigid,LinkSpring
+from simphys.world import World
+from simphys.app import App
+import simphys.values
 
 g=9.81        
 
