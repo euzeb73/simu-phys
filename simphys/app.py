@@ -30,13 +30,15 @@ class App():
         self.width = displayw
         self.height = displayh
         self.FPS = FPS
+        self.fullscreen=False
         self.window = pygame.display.set_mode(
-            (self.width, self.height), pygame.FULLSCREEN)
+            (self.width, self.height))
         self.clock = pygame.time.Clock()
         self.world = None  # à ajouter avec add_World
         self.speed = 1  # nb de fois la vitesse réelle
-        self.fontbig = Font()  # initialise la police Grande
-        self.fontsmall = Font('dejavusans', 12)  # initialise la police petite
+        self.fontbig = Font('timesnewroman',36)  # initialise la police Grande
+        self.fontsmall = Font('segoescript', 10)  # initialise la police petite
+        self.fontmedium = Font('segoescript', 24) #la moyenne
 
     def add_World(self, world):
         # Placer le WORLD dans la fenetre
@@ -65,7 +67,19 @@ class App():
     def set_speed(self, speed):
         self.speed = speed
         self.world.dt = self.speed/self.FPS
+        
+    def switch_full(self):
+        if self.fullscreen:
+            flag=0
+            self.fontmedium.addtext('Press F to switch to FULLSCREEN','Fullscreen',(255,0,128))
+        else:
+            flag=pygame.FULLSCREEN
+            self.fontmedium.addtext('Press F to switch to WINDOW mode','Fullscreen',(255,0,128))
+        self.fullscreen=not(self.fullscreen)
+        return pygame.display.set_mode(
+            (self.width, self.height),flag)
 
+    
     def affiche_cmd(self):
         pass
 
@@ -82,6 +96,7 @@ class App():
         self.fontbig.addtext('Pause')
         self.fontbig.addtext('Press ESC to QUIT', 'Quit')
         self.fontbig.addtext('Press R to RESTART', 'Restart')
+        self.fontmedium.addtext('Press F to switch to FULLSCREEN','Fullscreen',(255,0,128))
         self.fontsmall.addtext('START/PAUSE : ENTER', 'Enter', (0, 0, 255))
         self.fontsmall.addtext('Speed up: KUP', 'Up', (0, 0, 255))
         self.fontsmall.addtext('Speed down: KDOWN', 'Down', (0, 0, 255))
@@ -113,6 +128,8 @@ class App():
                         stopped = True
                     if event.key == pygame.K_r and paused:
                         self.world.restart()
+                    if event.key == pygame.K_f and paused:
+                        self.switch_full()
                     if event.key == pygame.K_UP:
                         self.FPS *= 1.5
                         self.set_speed(self.speed*2)
@@ -129,6 +146,10 @@ class App():
                 surface = self.fontbig.textdic['Pause']
                 w, h = surface.get_size()
                 self.window.blit(surface, (centerx-w//2, centery-h//2))
+                h2=h
+                surface = self.fontmedium.textdic['Fullscreen']
+                w, h = surface.get_size()
+                self.window.blit(surface, (centerx-w//2, centery+2*h2))
                 surface = self.fontbig.textdic['Quit']
                 w, h = surface.get_size()
                 self.window.blit(surface, (centerx-w//2, bottom-2*h))

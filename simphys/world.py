@@ -141,8 +141,8 @@ class World():
                 m2 = link.mass2.m
                 mT = m1+m2
                 u = pygame.math.Vector2.normalize(x2-x1)  # uM1M2
-                link.mass1.OM = x1+(m1*(taille-link.length)/mT)*u
-                link.mass2.OM = x2-(m2*(taille-link.length)/mT)*u
+                link.mass1.OM = x1+(m2*(taille-link.length)/mT)*u
+                link.mass2.OM = x2-(m1*(taille-link.length)/mT)*u
 
             else:  # les autres on les update
                 link.update()
