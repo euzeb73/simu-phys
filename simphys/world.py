@@ -10,7 +10,6 @@ import numpy as np
 from .mass import Mass
 from .links import LinkCsteF
 from .functions import norm
-from . import values
 
 
 class World():
@@ -18,7 +17,7 @@ class World():
         self.sizex = sizex  # Taille du monde en m. le mieux c'est de respecter sizex=4/3 sizey
         self.sizey = sizey
         # le rectangle monde par défaut
-        self.rect = pygame.Rect(0, 0, values.WIDTH, values.HEIGHT)
+        self.rect = pygame.Rect(0, 0, 1024, 768)
         self.mass = []
         self.link = []
         self.g = 9.81

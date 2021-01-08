@@ -8,7 +8,7 @@ Created on Mon Dec 28 14:23:08 2020
 import pygame
 
 class Form():
-    def __init__(self,mass, color=(255, 0, 0),screen):
+    def __init__(self,mass,screen, color=(255, 0, 0)):
         self.mass = mass
         self.color = color
         self.screen=screen
@@ -19,8 +19,8 @@ class Form():
         pass
 
 class Circle(Form):
-    def __init__(self, mass, color=(255, 0, 0),screen, R=0.1):
-        super().__init__(mass,color,screen)
+    def __init__(self, mass,screen, color=(255, 0, 0), R=0.1):
+        super().__init__(mass,screen,color)
         self.R = R
         
 
@@ -34,8 +34,8 @@ class Circle(Form):
 
 
 class Polygone(Form):
-    def __init__(self, mass,color = (255, 0, 0),screen, angle=0, n=3, listpoints):
-        super().__init(mass,color,screen)
+    def __init__(self, mass,screen, color=(255, 0, 0), angle=0, n=3, listpoints=[]):
+        super().__init__(mass,screen,color)
         self.angle = angle
         self.n = n
         self.listpoints = listpoints
@@ -45,7 +45,7 @@ class Polygone(Form):
 
 
 class Square(Polygone):
-    def __init__(self, mass, color=(255, 0, 0),screen,angle, a=0.1):
-        super().__init__(mass,color,screen,angle,4,[])
+    def __init__(self, mass,screen, color=(255, 0, 0),angle=0, a=0.1):
+        super().__init__(mass,screen,color,angle,4,[])
         self.a = a
 #        self.listpoints=[[x-a,y-a],[x-a,y+a],[x+a,y-a],[x+a,y-a]]
