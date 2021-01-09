@@ -23,7 +23,8 @@ class World():
         self.g = 9.81
         self.vecg = np.array([0, -self.g])
         self.color = (255, 255, 255)
-        self.screen = 0  # Il faudra mettre la surface pygame dans laquelle on affiche
+        #self.screen = 0  # Il faudra mettre la surface pygame dans laquelle on affiche
+        #                 # PAS utile en fait ?
         self.dt = 0.1
         self.gravity = True
         self.earth = Mass(1e24)
@@ -41,7 +42,7 @@ class World():
         if self.gravity:
             lien = LinkCsteF(m, self.earth, [0, -m.m*self.g])
             self.add_Link(lien)
-        for link, num in m.linklist:
+        for link,num in m.linklist:
             if link not in self.link:
                 self.link.append(link)
 
@@ -77,78 +78,18 @@ class World():
     def update(self):
         # Mise à jour des positions des masses
         for mass in self.mass:
-            # somme des forces
-            force = pygame.math.Vector2(0, 0)
-            for link, num in mass.linklist:
-                if not link.rigid:
-                    if num == 1:
-                        force += link.force1
-                    elif num == 2:
-                        force += link.force2
-#            for link,num in mass.linklist:
-#                if link.rigid:
-#                    x1=link.mass1.OM
-#                    x2=link.mass2.OM
-#                    u=(x1-x2)/norm(x1-x2)
-#                    deltaf=np.dot(force,u)*u
-#                    if num==1:
-#                        force=force+deltaf
-#                    elif num==2:
-#                        force=force-deltaf
-            mass.dv = (self.dt*force/mass.m)
-            mass.v = mass.v+mass.dv
-
-        for link in self.link:
-            #            print('v avant {}'.format(mass.v))
-            if link.rigid:
-                '''Si lien rigid, c'est un solide
-                Evolution calculée pour UNE masse à chaque bout de la tige et pas plus
-                TODO: généralisation... '''
-                x1 = link.mass1.OM
-                x2 = link.mass2.OM
-                m1 = link.mass1.m
-                m2 = link.mass2.m
-                mT = m1+m2
-                xG = m1*x1/mT+m2*x2/mT
-                m1dv1 = m1*link.mass1.dv
-                m2dv2 = m2*link.mass2.dv
-                # Calcul de la nouvelle vG
-                link.vG += m1dv1/mT+m2dv2/mT
-                # calcul du nouveau omega
-                GM1 = x1-xG
-                GM2 = x2-xG
-                link.w += (GM1.cross(m1dv1)+GM2.cross(m2dv2)) / \
-                    (m1*norm(GM1)**2+m2*norm(GM2)**2)
-                # Calcul des vitesses v1 et v2
-                link.mass1.v = link.vG - \
-                    pygame.math.Vector2(GM1[1]*link.w, -GM1[0]*link.w)
-                link.mass2.v = link.vG - \
-                    pygame.math.Vector2(GM2[1]*link.w, -GM2[0]*link.w)
-
-        # Mise à jour des positions une fois les 'bonnes vitesses' calculées
+            mass.updated=False #parce qu'on n'a pas encore updated la position
+            mass.updatev(self.dt)
         for mass in self.mass:
-            mass.OM = mass.OM+self.dt*mass.v
-
-        # Mise à jour des forces: recalculées avec les positions
+            mass.updateOM(self.dt)
+        # Mise à jour des forces dans les liens
         for link in self.link:
-            if link.rigid:  # les rigids on vérifie juste qu'ils grandissent pas.
-                x1 = link.mass1.OM
-                x2 = link.mass2.OM
-                taille = norm(x2-x1)
-                # Ce qu'il y a à enlever est réparti entre les deux masses prop à la masse
-                m1 = link.mass1.m
-                m2 = link.mass2.m
-                mT = m1+m2
-                u = pygame.math.Vector2.normalize(x2-x1)  # uM1M2
-                link.mass1.OM = x1+(m2*(taille-link.length)/mT)*u
-                link.mass2.OM = x2-(m1*(taille-link.length)/mT)*u
+            link.update()
 
-            else:  # les autres on les update
-                link.update()
-
-    def draw(self):
-        pygame.draw.rect(self.screen, (255, 255, 255), self.rect)
+    def draw(self,screen):
+        window=screen.window
+        pygame.draw.rect(window, (255, 255, 255), self.rect)
         for l in self.link:
-            l.draw(self.screen)
+            l.draw(screen)
         for m in self.mass:
-            m.draw(self.screen)
+            m.draw(screen)

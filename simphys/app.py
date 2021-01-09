@@ -9,19 +9,6 @@ from .screen import Screen
 from .world import World
 
 
-class Font():
-    def __init__(self, font=None, size=48):
-
-        self.font = pygame.font.SysFont(font, size)  # initialise la police
-        self.textdic = dict()  # Dictionnaire vide
-
-    def addtext(self, text, txtname=None, color=(255, 0, 0)):
-        '''fabrique une image(surface) associée à text prete à coller'''
-        if txtname == None:
-            self.textdic[text] = self.font.render(text, True, color)
-        else:
-            self.textdic[txtname] = self.font.render(text, True, color)
-
 
 class App():
     def __init__(self, FPS=60):
@@ -83,7 +70,6 @@ class App():
                 self.screen.update(self.world)
 
             if paused:
-                self.screen.affich_menu()
-                self.screen.update(self.world)
+                self.screen.update(self.world,paused)
             self.clock.tick(self.FPS)
         pygame.quit()

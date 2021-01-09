@@ -10,7 +10,7 @@ from simphys.links import LinkCsteF,LinkRigid,LinkSpring
 from simphys.world import World
 from simphys.app import App
 from simphys.functions import norm
-import simphys.values
+
 
 g=9.81        
 

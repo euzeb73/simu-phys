@@ -1,7 +1,22 @@
 # -*- coding: utf-8 -*-
 
 import pygame
-from .app import Font
+
+
+
+class Font():
+    def __init__(self, font=None, size=48):
+
+        self.font = pygame.font.SysFont(font, size)  # initialise la police
+        self.textdic = dict()  # Dictionnaire vide
+
+    def addtext(self, text, txtname=None, color=(255, 0, 0)):
+        '''fabrique une image(surface) associée à text prete à coller'''
+        if txtname == None:
+            self.textdic[text] = self.font.render(text, True, color)
+        else:
+            self.textdic[txtname] = self.font.render(text, True, color)
+
 
 class Screen():
     def __init__(self,width=1024,height=768):
@@ -62,15 +77,18 @@ class Screen():
         self.worldrect = pygame.Rect(
             xshift, yshift, width, height)
 
-    def update(self,world): 
+    def update(self,world,paused=False): 
 
         # Tuple for filling display... Current is lightgrey
         self.window.fill((150, 150, 150))
-        self.affich_cmd()
+        
         #Voir comment on va dessiner le monde
         #  pour l'instant ancvinne méthode
         # mais il faut changer ce bazar
-        world.draw(self.window)
+        world.draw(self)
+        self.affich_cmd()
+        if paused:
+            self.affich_menu()
         pygame.display.update()
     
     def affich_menu(self):
@@ -89,7 +107,7 @@ class Screen():
         h2=h
         surface = self.fontmedium.textdic['Fullscreen']
         w, h = surface.get_size()
-        self.window.blit(surface, (centerx-w//2, centery+2*h2))
+        self.window.blit(surface, (centerx-w//2, centery+h2))
         surface = self.fontbig.textdic['Quit']
         w, h = surface.get_size()
         self.window.blit(surface, (centerx-w//2, bottom-2*h))

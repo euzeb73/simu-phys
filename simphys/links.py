@@ -30,9 +30,9 @@ class Link():
 
     def draw(self, screen):
         if self.visible:
-            start = OMtopx(self.mass1.OM)
-            stop = OMtopx(self.mass2.OM)
-            pygame.draw.line(screen, self.color, start, stop, self.width)
+            start = screen.OMtopx(self.mass1.OM)
+            stop = screen.OMtopx(self.mass2.OM)
+            pygame.draw.line(screen.window, self.color, start, stop, self.width)
 
 
 class LinkRigid(Link):
@@ -43,12 +43,14 @@ class LinkRigid(Link):
         super().__init__(m1, m2)
         self.rigid = True
         self.length = norm(self.mass1.OM-self.mass2.OM)
+        self.mass1.rigidlink=self
+        self.mass2.rigidlink=self
+        self.correctCI() #pour réajuster les vitesses si pas compatibes avec tige rigide
         self.update()
 
-    def update(self):
+    def correctCI(self):
         '''Recalcule vG et omega à partir de v1 et v2
-        elimine les problèmes dans les vitesses
-        et vérifie que le lien n'a pas grandit'''
+        elimine les problèmes dans les vitesses '''
         m1 = self.mass1.m
         m2 = self.mass2.m
         mT = m1+m2
@@ -77,17 +79,7 @@ class LinkRigid(Link):
         # Recalcule vG et w
         self.vG = m1*v1/mT+m2*v2/mT
         self.w = (v2.dot(uortho)-v1.dot(uortho))/(norm(x1-xG)+norm(x2-xG))
-        # on vérifie juste qu'ils grandissent pas.
-        x1 = self.mass1.OM
-        x2 = self.mass2.OM
-        taille = norm(x2-x1)
-        # Ce qu'il y a à enlever est réparti entre les deux masses prop à la masse
-        m1 = self.mass1.m
-        m2 = self.mass2.m
-        mT = m1+m2
-        u = pygame.math.Vector2.normalize(x2-x1)  # uM1M2
-        self.mass1.OM = x1+(m2*(taille-self.length)/mT)*u
-        self.mass2.OM = x2-(m1*(taille-self.length)/mT)*u
+
 
 
 class LinkCsteF(Link):
@@ -132,7 +124,7 @@ class LinkSpring(Link):
                 alpha = 0  # ça ne devrait pas arriver
             else:
                 alpha = np.arccos(l/ltot)  # Angle des segments
-            depart = OMtopx(self.mass1.OM)
+            depart = screen.OMtopx(self.mass1.OM)
             liste_points = [depart]
             for i in range(0, nseg):
                 if i == 0:
@@ -144,9 +136,9 @@ class LinkSpring(Link):
                 else:
                     pointenm = pointenm+lseg * \
                         np.array([np.cos(theta-alpha), np.sin(theta-alpha)])
-                point = OMtopx(pointenm)
+                point = screen.OMtopx(pointenm)
                 liste_points.append(point)
-            arrivee = OMtopx(self.mass2.OM)
+            arrivee = screen.OMtopx(self.mass2.OM)
             liste_points.append(arrivee)
-            pygame.draw.lines(screen, self.color, False,
+            pygame.draw.lines(screen.window, self.color, False,
                               liste_points, self.width)

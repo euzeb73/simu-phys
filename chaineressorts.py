@@ -9,7 +9,6 @@ from simphys.mass import Mass
 from simphys.links import LinkCsteF,LinkRigid,LinkSpring
 from simphys.world import World
 from simphys.app import App
-import simphys.values
 
 g=9.81        
 
