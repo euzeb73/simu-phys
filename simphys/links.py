@@ -12,7 +12,7 @@ from .functions import norm
 
 class Link():
     def __init__(self, m1, m2):
-        '''Lien rigide'''
+        '''Lien de base'''
         self.visible = True
         self.color = (0, 0, 0)  # noir par défaut
         # largeur par défaut (affchage) mettre un entier impair SVP
@@ -43,10 +43,12 @@ class LinkRigid(Link):
         super().__init__(m1, m2)
         self.rigid = True
         self.length = norm(self.mass1.OM-self.mass2.OM)
+        self.update()
 
     def update(self):
         '''Recalcule vG et omega à partir de v1 et v2
-        elimine les problèmes'''
+        elimine les problèmes dans les vitesses
+        et vérifie que le lien n'a pas grandit'''
         m1 = self.mass1.m
         m2 = self.mass2.m
         mT = m1+m2
@@ -75,6 +77,17 @@ class LinkRigid(Link):
         # Recalcule vG et w
         self.vG = m1*v1/mT+m2*v2/mT
         self.w = (v2.dot(uortho)-v1.dot(uortho))/(norm(x1-xG)+norm(x2-xG))
+        # on vérifie juste qu'ils grandissent pas.
+        x1 = self.mass1.OM
+        x2 = self.mass2.OM
+        taille = norm(x2-x1)
+        # Ce qu'il y a à enlever est réparti entre les deux masses prop à la masse
+        m1 = self.mass1.m
+        m2 = self.mass2.m
+        mT = m1+m2
+        u = pygame.math.Vector2.normalize(x2-x1)  # uM1M2
+        self.mass1.OM = x1+(m2*(taille-self.length)/mT)*u
+        self.mass2.OM = x2-(m1*(taille-self.length)/mT)*u
 
 
 class LinkCsteF(Link):
