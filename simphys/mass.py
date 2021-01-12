@@ -75,12 +75,17 @@ class Mass():
             self.rigidlink.mass2.v = self.rigidlink.vG - \
                 pygame.math.Vector2(GM2[1]*self.rigidlink.w, -GM2[0]*self.rigidlink.w)
 
-        # Mise à jour de position une fois les 'bonnes vitesses' calculées si besoin
-        if not self.updated:
-            self.OM = self.OM+dt*self.v
+        if self.rigidlink and self.updated:
+            #la masse est reliée à une tige et c'est la deuxième à etre mise à jour
+            self.v-=self.dv #on annule la modif de vitesse due aux forces ce qui redonne la vitesse calculée par le mouvement de la tige
 
-        # Si on a une tige il ne faut pas qu'lle change de taille.
+        # Mise à jour de position une fois les 'bonnes vitesses' calculées si besoin       
+        self.OM = self.OM+dt*self.v
+        
+        # Si on a une tige il ne faut pas qu'elle change de taille.
         if self.rigidlink and not self.updated:
+            x1 = self.rigidlink.mass1.OM
+            x2 = self.rigidlink.mass2.OM
             taille = norm(x2-x1)
             # Ce qu'il y a à enlever est réparti entre les deux masses prop à la masse de l'autre
             u = pygame.math.Vector2.normalize(x2-x1)  # uM1M2
