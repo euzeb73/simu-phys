@@ -14,14 +14,14 @@ from simphys.app import App
 g=9.81        
 
 m1=Mass(1,[3.5,5],0,[-5,0])
-m1.form.R=0.05
+m1.set_size(0.05)
 
 m2=Mass(2,[3,6],0,[0,0])
-m2.form.R=0.1
+m1.set_size(0.1)
 m2.form.color=(40,128,50)
 
 m3=Mass(3,[4,6],0,[0,0])
-m3.form.R=0.1
+m1.set_size(0.1)
 m3.form.color=(255,0,128)
 
 

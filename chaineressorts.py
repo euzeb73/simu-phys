@@ -23,10 +23,10 @@ masslist=[]
 for i in range(n):
     if i==0:
         m=Mass(1,[0.25,0.7])
-        m.form.R=0.05
+        m.set_size(0.05)
     else:
         m=Mass(1,[0.5+0.25*i,0.7])
-        m.form.R=0.05
+        m.set_size(0.05)
     masslist.append(m)
 
 for i in range(n-1):
@@ -40,10 +40,10 @@ masslist=[]
 for i in range(n):
     if i==0:
         m=Mass(1,[0.25,0.3])
-        m.form.R=0.05
+        m.set_size(0.05)
     else:
         m=Mass(1,[0.5+0.25*i,0.3])
-        m.form.R=0.05
+        m.set_size(0.05)
     masslist.append(m)
 
 masslist[-1].m=1e6

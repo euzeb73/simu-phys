@@ -16,6 +16,7 @@ class Mass():
         self.v0 = pygame.math.Vector2(v[0], v[1])
         self.w0 = w
         self.angle = angle
+        self.size=0.1
         self.rigidlink=None
         self.updated=False #pour voir si on a mis à jour la masse ou pas
         self.linklist = []
@@ -25,6 +26,10 @@ class Mass():
         elif form == 'Square':
             self.form = Square(self)
         self.restart()
+
+    def set_size(self,size):
+        self.size=size
+        self.form.size=size
 
     def restart(self):
         self.m = self.m0
@@ -88,6 +93,24 @@ class Mass():
             self.rigidlink.mass2.OM = x2-(m1*(taille-self.rigidlink.length)/mT)*u
             self.rigidlink.mass1.updated=True
             self.rigidlink.mass2.updated=True
+
+    def detect_bounce(self,world):
+        limite=world.sizex-self.size/2
+        if self.OM[0]>limite:
+            self.OM[0]=limite
+            self.v[0]=-self.v[0]
+        limite=self.size/2
+        if self.OM[0]<limite:
+            self.OM[0]=limite
+            self.v[0]=-self.v[0]
+        limite=world.sizey-self.size/2
+        if self.OM[1]>limite:
+            self.OM[1]=limite
+            self.v[1]=-self.v[1]
+        limite=self.size/2
+        if self.OM[1]<limite:
+            self.OM[1]=limite
+            self.v[1]=-self.v[1]
 
     def draw(self, screen):
         if self.visible:

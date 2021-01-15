@@ -29,6 +29,7 @@ class World():
         self.gravity = True
         self.earth = Mass(1e24)
         self.earth.visible = False
+        self.boucingbounds=True #(bords rebondissants)
 
     def restart(self):
         for mass in self.mass:
@@ -74,6 +75,9 @@ class World():
                     if lien.mass1 == self.earth:
                         del mass.linklist[i]
                         self.link.remove(lien)
+    def detect_bounce(self):
+        for mass in self.mass:
+            mass.detect_bounce(self)
 
     def update(self):
         # Mise à jour des positions des masses
@@ -82,6 +86,10 @@ class World():
             mass.updatev(self.dt)
         for mass in self.mass:
             mass.updateOM(self.dt)
+        #test collision des bords:
+        if self.boucingbounds:
+            self.detect_bounce()
+            
         # Mise à jour des forces dans les liens
         for link in self.link:
             link.update()
