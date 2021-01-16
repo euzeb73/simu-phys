@@ -10,6 +10,7 @@ import pygame
 class Form():
     def __init__(self,mass,screen=None, color=(255, 0, 0)):
         self.mass = mass
+        self.size=mass.size
         self.color = color
         self.screen=screen
         self.visible = True
@@ -19,13 +20,14 @@ class Form():
         pass
 
 class Circle(Form):
-    def __init__(self, mass,screen=None, color=(255, 0, 0), R=0.1):
+    def __init__(self, mass,screen=None, color=(255, 0, 0)):
         super().__init__(mass,screen,color)
-        self.R = R
+        self.R = self.size
         
 
     def draw(self):
         if self.visible:
+            self.R=self.size
             center = self.screen.OMtopx(self.mass.OM)
             radius = max(self.screen.mtopx(self.R), 1)  # pour avoir au moins un point
             pygame.draw.circle(self.screen.window, self.color, center, radius)
