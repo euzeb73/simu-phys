@@ -96,7 +96,7 @@ class World():
 
     def draw(self,screen):
         window=screen.window
-        pygame.draw.rect(window, (255, 255, 255), self.rect)
+        pygame.draw.rect(window, (255, 255, 255), screen.worldrect)
         for l in self.link:
             l.draw(screen)
         for m in self.mass:

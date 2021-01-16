@@ -83,7 +83,7 @@ class Screen():
         self.window.fill((150, 150, 150))
         
         #Voir comment on va dessiner le monde
-        #  pour l'instant ancvinne méthode
+        #  pour l'instant ancienne méthode
         # mais il faut changer ce bazar
         world.draw(self)
         self.affich_cmd()
