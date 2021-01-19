@@ -16,9 +16,9 @@ l0 = 1
 
 monde = World(3, 3)
 mfixe = Mass(1e10, [1.5, 2])
-mfixe.visible = False
+mfixe.form.visible = False
 mfixe2 = Mass(1e10, [1.5, 2.5])
-mfixe2.visible = False
+mfixe2.form.visible = False
 m = Mass(1, [2.5, 2])
 ressort = LinkSpring(m, mfixe2, k, l0)
 tige = LinkRigid(m, mfixe)
