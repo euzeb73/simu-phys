@@ -8,32 +8,25 @@ Created on Mon Dec 28 14:16:59 2020
 import numpy as np
 import pygame
 from .functions import norm
-
+from .linksforms import LinkForm,SpringForm
 
 class Link():
     def __init__(self, m1, m2):
         '''Lien de base'''
-        self.visible = True
-        self.color = (0, 0, 0)  # noir par défaut
-        # largeur par défaut (affchage) mettre un entier impair SVP
-        self.width = 3
         self.mass1 = m1
         self.mass2 = m2
         # donne le lien et le numero de la masse pour ce lien
         self.mass1.linklist.append((self, 1))
         self.mass2.linklist.append((self, 2))
         self.rigid = False
+        self.linkForm=LinkForm(self)
         self.update()
 
     def update(self):
         pass
 
     def draw(self, screen):
-        if self.visible:
-            start = screen.OMtopx(self.mass1.OM)
-            stop = screen.OMtopx(self.mass2.OM)
-            pygame.draw.line(screen.window, self.color, start, stop, self.width)
-
+        self.linkForm.draw(screen)
 
 class LinkRigid(Link):
     def __init__(self, m1, m2):
@@ -41,6 +34,7 @@ class LinkRigid(Link):
         TODO: généralisation... '''
 
         super().__init__(m1, m2)
+        self.linkForm.visible=True
         self.rigid = True
         self.length = norm(self.mass1.OM-self.mass2.OM)
         self.mass1.rigidlink=self
@@ -89,7 +83,6 @@ class LinkCsteF(Link):
         self.force2 = -self.force1
         super().__init__(m1, m2)
         self.rigid = False
-        self.visible = False
 
 
 class LinkSpring(Link):
@@ -98,6 +91,7 @@ class LinkSpring(Link):
         self.k = k
         self.l0 = l0
         super().__init__(m1, m2)
+        self.linkForm=SpringForm(self)
         self.rigid = False
 
     def update(self):
@@ -108,37 +102,3 @@ class LinkSpring(Link):
         uM2M1 = pygame.math.Vector2.normalize(x1-x2)
         self.force1 = -self.k*(l-self.l0)*uM2M1  # force sur la masse 1
         self.force2 = -self.force1  # Newton
-
-    def draw(self, screen):
-        '''Dessine un ressort'''
-        if self.visible:
-            ltot = 2.1*self.l0  # Longueur du ressort entièrement détendu
-            nseg = 20  # nb de segments PAIR SVP
-            lseg = ltot/nseg  # Longueur d'un segment
-            x1 = self.mass1.OM
-            x2 = self.mass2.OM
-            M1M2 = x2-x1
-            l = norm(M1M2)  # longueur entre les 2 masses
-            theta = np.arctan2(M1M2[1], M1M2[0])
-            if l > ltot:
-                alpha = 0  # ça ne devrait pas arriver
-            else:
-                alpha = np.arccos(l/ltot)  # Angle des segments
-            depart = screen.OMtopx(self.mass1.OM)
-            liste_points = [depart]
-            for i in range(0, nseg):
-                if i == 0:
-                    pointenm = self.mass1.OM+0.5*lseg * \
-                        np.array([np.cos(alpha+theta), np.sin(theta+alpha)])
-                elif i % 2 == 0:
-                    pointenm = pointenm+lseg * \
-                        np.array([np.cos(alpha+theta), np.sin(alpha+theta)])
-                else:
-                    pointenm = pointenm+lseg * \
-                        np.array([np.cos(theta-alpha), np.sin(theta-alpha)])
-                point = screen.OMtopx(pointenm)
-                liste_points.append(point)
-            arrivee = screen.OMtopx(self.mass2.OM)
-            liste_points.append(arrivee)
-            pygame.draw.lines(screen.window, self.color, False,
-                              liste_points, self.width)

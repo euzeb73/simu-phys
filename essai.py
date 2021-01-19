@@ -16,7 +16,7 @@ g=9.81
 
 monde=World(10,10)
 mfixe=Mass(1e6,[5,6.5])
-mfixe.visible=False
+mfixe.form.visible=False
 m=Mass(1,[6,6.5])
 tige=LinkRigid(m,mfixe)
 monde.add_Mass(m)

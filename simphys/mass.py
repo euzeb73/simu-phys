@@ -118,6 +118,4 @@ class Mass():
             self.v[1]=-self.v[1]
 
     def draw(self, screen):
-        if self.visible:
-            self.form.screen=screen
-            self.form.draw()
+        self.form.draw(screen)

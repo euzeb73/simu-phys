@@ -28,7 +28,7 @@ class World():
         self.dt = 0.1
         self.gravity = True
         self.earth = Mass(1e24)
-        self.earth.visible = False
+        self.earth.form.visible = False
         self.boucingbounds=True #(bords rebondissants)
 
     def restart(self):
