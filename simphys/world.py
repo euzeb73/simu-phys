@@ -77,13 +77,13 @@ class World():
                         self.link.remove(lien)
     def detect_wall_bounce(self):
         for mass in self.mass:
-            mass.detect_bounce(self)
+            mass.detect_bounce(self,self.dt)
 
     def detect_bounce(self):
         #On fait le bilan 2 à 2 des collisions des masses
-        for i in range(len(self.mass)):
-            for j in range(i,len(self.mass)):
-                self.mass[i].handle_collision(mass[j])
+        for i in range(len(self.mass)-1):
+            for j in range(i+1,len(self.mass)):
+                self.mass[i].handle_collision(self.mass[j],self.dt)
 
     def update(self):
         # Mise à jour des positions des masses
