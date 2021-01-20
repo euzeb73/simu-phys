@@ -117,5 +117,20 @@ class Mass():
             self.OM[1]=limite
             self.v[1]=-self.v[1]
 
+    def handle_collision(self,mass):
+        collision=self.detect_collision(mass)
+        if collision:
+            #on change les vitesses
+            self.v=2
+            mass.v=2
+
+    def detect_collision(self,mass):
+        collision=False
+        d=norm(self.OM-mass.OM)
+        if d<=self.size+mass.size:
+            collision=True
+        return collision
+
+
     def draw(self, screen):
         self.form.draw(screen)

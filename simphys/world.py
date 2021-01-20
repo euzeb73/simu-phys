@@ -75,9 +75,15 @@ class World():
                     if lien.mass1 == self.earth:
                         del mass.linklist[i]
                         self.link.remove(lien)
-    def detect_bounce(self):
+    def detect_wall_bounce(self):
         for mass in self.mass:
             mass.detect_bounce(self)
+
+    def detect_bounce(self):
+        #On fait le bilan 2 à 2 des collisions des masses
+        for i in range(len(self.mass)):
+            for j in range(i,len(self.mass)):
+                self.mass[i].handle_collision(mass[j])
 
     def update(self):
         # Mise à jour des positions des masses
@@ -86,10 +92,14 @@ class World():
             mass.updatev(self.dt)
         for mass in self.mass:
             mass.updateOM(self.dt)
+
+        #tests de collisions entre particules
+        self.detect_bounce()
+
         #test collision des bords:
         if self.boucingbounds:
-            self.detect_bounce()
-            
+            self.detect_wall_bounce()
+        
         # Mise à jour des forces dans les liens
         for link in self.link:
             link.update()
