@@ -162,6 +162,7 @@ class Mass():
         d=norm(self.OM-mass.OM)
         if d<=self.size+mass.size:
             collision=True
+            print('collision')
         return collision
 
 
