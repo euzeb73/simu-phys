@@ -21,7 +21,7 @@ class Mass():
         self.rigidlink=None
         self.updated=False #pour voir si on a mis à jour la masse ou pas
         self.linklist = []
-        self.visible = True
+        self.collides = True
         if form == 'Circle':
             self.form = Circle(self)
         elif form == 'Square':

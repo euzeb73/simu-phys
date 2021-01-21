@@ -15,7 +15,7 @@ import pygame
 
 g=9.81        
 random.seed()
-N=20
+N=200
 taillex=1
 tailley=1
 monde=World(taillex,tailley)

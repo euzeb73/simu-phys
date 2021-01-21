@@ -82,8 +82,9 @@ class World():
     def detect_bounce(self):
         #On fait le bilan 2 à 2 des collisions des masses
         for i in range(len(self.mass)-1):
-            for j in range(i+1,len(self.mass)):
-                self.mass[i].handle_collision(self.mass[j],self.dt)
+            if self.mass[i].collides:
+                for j in range(i+1,len(self.mass)):
+                    self.mass[i].handle_collision(self.mass[j],self.dt)
 
     def update(self):
         # Mise à jour des positions des masses
