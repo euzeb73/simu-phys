@@ -29,6 +29,7 @@ class World():
         self.gravity = True
         self.earth = Mass(1e24)
         self.earth.form.visible = False
+        self.earth.collides=False
         self.boucingbounds=True #(bords rebondissants)
 
     def restart(self):
@@ -84,7 +85,8 @@ class World():
         for i in range(len(self.mass)-1):
             if self.mass[i].collides:
                 for j in range(i+1,len(self.mass)):
-                    self.mass[i].handle_collision(self.mass[j],self.dt)
+                    if self.mass[j].collides:
+                        self.mass[i].handle_collision(self.mass[j],self.dt)
 
     def update(self):
         # Mise à jour des positions des masses
