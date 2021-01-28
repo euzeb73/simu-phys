@@ -73,7 +73,34 @@ class LinkRigid(Link):
         # Recalcule vG et w
         self.vG = m1*v1/mT+m2*v2/mT
         self.w = (v2.dot(uortho)-v1.dot(uortho))/(norm(x1-xG)+norm(x2-xG))
-
+    
+    def update(self):
+        x1 = self.mass1.OM
+        x2 = self.mass2.OM
+        v1 = self.mass1.v
+        v2 = self.mass2.v
+        m1=self.mass1.m
+        m2=self.mass2.m
+        F1=pygame.math.Vector2([0,0])
+        for link,num in self.mass1.linklist:
+            if link is not self:
+                if num == 1:
+                    F1+= link.force1
+                elif num == 2:
+                    F1+= link.force2
+        F2=pygame.math.Vector2([0,0])
+        for link,num in self.mass2.linklist:
+            if link is not self:
+                if num == 1:
+                    F2+= link.force1
+                elif num == 2:
+                    F2+= link.force2
+        l = norm(x1-x2)
+        uM1M2 = pygame.math.Vector2.normalize(x2-x1)
+        mu=(m1*m2)/(m1+m2)
+        T=uM1M2*mu*((v2-v1).dot(v2-v1)+(x2-x1).dot(F2/m2-F1/m1))/l
+        self.force1=T
+        self.force2=-T
 
 
 class LinkCsteF(Link):

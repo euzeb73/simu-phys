@@ -43,7 +43,7 @@ class Mass():
         force = pygame.math.Vector2(0, 0)
         #belongtosolid=False
         for link, num in self.linklist:
-            if not link.rigid:
+            if True: #not link.rigid:
                 if num == 1:
                     force += link.force1
                 elif num == 2:
@@ -56,6 +56,7 @@ class Mass():
         self.dv = (dt*force/self.m)
         self.v = self.v+self.dv
     def updateOM(self,dt):
+        """
         if self.rigidlink and not self.updated:
             '''Si lien rigid, c'est un solide
             Evolution calculée pour UNE masse à chaque bout de la tige et pas plus
@@ -84,12 +85,16 @@ class Mass():
         if self.rigidlink and self.updated:
             #la masse est reliée à une tige et c'est la deuxième à etre mise à jour
             self.v-=self.dv #on annule la modif de vitesse due aux forces ce qui redonne la vitesse calculée par le mouvement de la tige
+        """
 
         # Mise à jour de position une fois les 'bonnes vitesses' calculées si besoin       
         self.OM = self.OM+dt*self.v
         
         # Si on a une tige il ne faut pas qu'elle change de taille.
-        if self.rigidlink and not self.updated:
+        if self.rigidlink: # and not self.updated:
+            m1 = self.rigidlink.mass1.m
+            m2 = self.rigidlink.mass2.m
+            mT = m1+m2
             x1 = self.rigidlink.mass1.OM
             x2 = self.rigidlink.mass2.OM
             taille = norm(x2-x1)
@@ -99,6 +104,7 @@ class Mass():
             self.rigidlink.mass2.OM = x2-(m1*(taille-self.rigidlink.length)/mT)*u
             self.rigidlink.mass1.updated=True
             self.rigidlink.mass2.updated=True
+        
 
     def detect_bounce(self,world,dt):
         '''dt pour remonter les positions d'un cran: avant que ça se touche'''
@@ -145,17 +151,18 @@ class Mass():
             v1=self.v
             v2=mass.v
             dv=v2-v1
-            deltat=-(M2M10.dot(dv)+sqrt((M2M10.dot(dv))**2-dv.dot(dv)*(M2M10.dot(M2M10)-dmin**2)))/dv.dot(dv)
-            x1=x10+v1*deltat
-            x2=x20+v2*deltat
-            m1=self.m
-            m2=mass.m
-            M2M1=x1-x2
-            if M2M1.length()>0:
-                n=M2M1.normalize()
-                P=2*(n.dot(v2-v1)/(1/m1+1/m2))*n  #Variation d'impulsion
-                self.v+=P/m1
-                mass.v-=P/m2
+            if dv.length()>0:
+                deltat=-(M2M10.dot(dv)+sqrt((M2M10.dot(dv))**2-dv.dot(dv)*(M2M10.dot(M2M10)-dmin**2)))/dv.dot(dv)
+                x1=x10+v1*deltat
+                x2=x20+v2*deltat
+                m1=self.m
+                m2=mass.m
+                M2M1=x1-x2
+                if M2M1.length()>0:
+                    n=M2M1.normalize()
+                    P=2*(n.dot(v2-v1)/(1/m1+1/m2))*n  #Variation d'impulsion
+                    self.v+=P/m1
+                    mass.v-=P/m2
 
     def detect_collision(self,mass):
         collision=False
