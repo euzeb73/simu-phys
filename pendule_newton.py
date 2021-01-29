@@ -18,7 +18,7 @@ taillex=10
 tailley=5
 monde=World(taillex,tailley)
 rayon=0.1
-N=30
+N=40
 L=1
 anchorptlist=[]
 for i in range(N):
