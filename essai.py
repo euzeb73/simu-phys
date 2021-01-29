@@ -15,14 +15,16 @@ g=9.81
 
 
 monde=World(10,10)
-mfixe=Mass(1e6,[5,6.5])
-mfixe.form.visible=False
-m=Mass(1,[6,6.5])
-tige=LinkRigid(m,mfixe)
-monde.add_Mass(m)
-monde.add_Mass(mfixe)
-monde.disable_gravity([mfixe])
+m1=Mass(1,[6,6.5])
+m2=Mass(5,[5,5])
+m3=Mass(0.1,[6.5,4])
+t12=LinkRigid(m1,m2)
+t23=LinkRigid(m2,m3)
+t31=LinkRigid(m3,m1)
+monde.add_Mass(m1)
+monde.add_Mass(m2)
+monde.add_Mass(m3)
 appli=App()
 appli.add_World(monde)
 appli.set_speed(0.125)
-
+appli.run()

@@ -23,6 +23,7 @@ class App():
         # Placer le WORLD dans l'app
         self.world = world
         self.world.dt = self.speed/self.FPS
+        self.world.prepare()
         self.screen.set_world_size(world)
 
     def set_speed(self, speed):
