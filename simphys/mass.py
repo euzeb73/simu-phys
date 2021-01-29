@@ -38,21 +38,21 @@ class Mass():
         self.v = self.v0
         self.w = self.w0
 
-    def updatev(self,dt):
+    def sumforces(self,exceptrigid=False):
         # somme des forces
         force = pygame.math.Vector2(0, 0)
         #belongtosolid=False
         for link, num in self.linklist:
-            if True: #not link.rigid:
+            if not exceptrigid:
                 if num == 1:
                     force += link.force1
                 elif num == 2:
                     force += link.force2
-            # else:
-            #     belongtosolid=True
-            #     rigidlink=link #on n'est censé n'avoir qu'un lien solide
-            #     #massnumonlink=num   #PAS utile ?
+        return force
 
+    def updatev(self,dt):
+        
+        force=self.sumforces()
         self.dv = (dt*force/self.m)
         self.v = self.v+self.dv
     def updateOM(self,dt):
@@ -91,6 +91,7 @@ class Mass():
         self.OM = self.OM+dt*self.v
         
         # Si on a une tige il ne faut pas qu'elle change de taille.
+        '''
         if self.rigidlink: # and not self.updated:
             m1 = self.rigidlink.mass1.m
             m2 = self.rigidlink.mass2.m
@@ -104,7 +105,7 @@ class Mass():
             self.rigidlink.mass2.OM = x2-(m1*(taille-self.rigidlink.length)/mT)*u
             self.rigidlink.mass1.updated=True
             self.rigidlink.mass2.updated=True
-        
+        '''
 
     def detect_bounce(self,world,dt):
         '''dt pour remonter les positions d'un cran: avant que ça se touche'''
@@ -140,7 +141,7 @@ class Mass():
             #on change les vitesses
             # https://physics.stackexchange.com/questions/107648/what-are-the-general-solutions-to-a-hard-sphere-collision
             #permet de faire les calculs avec les 3 conservartions
-            # en fait la conservation du moment cinétique amène celle de l'impulsion que la diff de vitesse pour
+            # en fait la conservation du moment cinétique amène avec celle de l'impulsion que la diff de vitesse pour
             # les masses est colinéaire à l'axe passant par les centres des boules.
             #Après on exprime les nvelles vitesse avec les ancienne+- la même d'impulsion divisée par masse
             #dans la conservation de l'EC ça donne le résultat utilisé.
@@ -169,7 +170,6 @@ class Mass():
         d=norm(self.OM-mass.OM)
         if d<=self.size+mass.size:
             collision=True
-            print('collision')
         return collision
 
 

@@ -31,7 +31,26 @@ class World():
         self.earth.form.visible = False
         self.earth.collides=False
         self.boucingbounds=True #(bords rebondissants)
+        self.rigidsnb=0
 
+    def prepare(self):
+        '''fait un dictionnaire pour les liens rigides
+        avec en keys les 2 masses et en values
+        le num dans la list '''
+        i=0
+        self.rigidsdict=dict()
+        for link in self.link:
+            if link.rigid:
+                m1=link.mass1
+                m2=link.mass2
+                i1=self.mass.index(m1)
+                i2=self.mass.index(m2)
+                self.rigidsdict[(min(i1,i2),max(i1,i2))]=i #Toujours i<j
+                i+=1
+
+
+
+    
     def restart(self):
         for mass in self.mass:
             mass.restart()
@@ -46,11 +65,13 @@ class World():
             self.add_Link(lien)
         for link,num in m.linklist:
             if link not in self.link:
-                self.link.append(link)
+                self.add_Link(link)
 
     def add_Link(self, l):
         ''' A n'utiliser que si on a ajouté des masses sans liens
         Utiliser add mass qui ajoute aussi les liens'''
+        if l.rigid:
+            self.rigidsnb+=1
         self.link.append(l)
 
     def enable_gravity(self, g):
@@ -88,6 +109,74 @@ class World():
                     if self.mass[j].collides:
                         self.mass[i].handle_collision(self.mass[j],self.dt)
 
+    def calc_rigids(self):
+        '''Calcule les forces des liens rigides'''
+        systmatrixA=np.zeros((self.rigidsnb,self.rigidsnb)) #Système A X= B avec X=les forces qu'on cherche
+        systB=np.zeros(self.rigidsnb)
+        ligne=0
+        for link in self.link:
+            if link.rigid:
+                m1=link.mass1
+                m2=link.mass2
+                i1=self.mass.index(m1)
+                i2=self.mass.index(m2)
+                v1=m1.v
+                v2=m2.v
+                M1M2=m2.OM-m1.OM
+                F1=m1.sumforces(True) #la somme des forces sans les liens rigides
+                F2=m2.sumforces(True)
+                systB[ligne]=(v2-v1).dot(v2-v1)+M1M2.dot(F2/m2.m-F1/m1.m)
+                for l,num in m1.linklist:
+                    if l.rigid:
+                        if num==1:
+                            mj=l.mass2
+                        else:
+                            mj=l.mass1
+                        M1Mj=mj.OM-m1.OM
+                        j=self.mass.index(mj)
+                        if i1<j: #Pour les liens on a choisi i<j
+                            epsilon=1
+                        else: #si i>j c'est la force opposée
+                            epsilon=-1
+                        colonne=self.rigidsdict[(min(i1,j),max(i1,j))]
+                        systmatrixA[ligne,colonne]=M1M2.dot(M1Mj)/(m1.m*M1Mj.length())
+                for l,num in m2.linklist:
+                    if l.rigid:
+                        if num==1:
+                            ml=l.mass2
+                        else:
+                            ml=l.mass1
+                        M2Ml=ml.OM-m2.OM
+                        l=self.mass.index(ml)
+                        if i2<l: #Pour les liens on a choisi i<j
+                            epsilon=1
+                        else: #si i>j c'est la force opposée
+                            epsilon=-1
+                        colonne=self.rigidsdict[(min(i2,l),max(i2,l))]
+                        systmatrixA[ligne,colonne]+=M1M2.dot(M2Ml)/(m2.m*M2Ml.length())
+                ligne+=1
+        return np.linalg.solve(systmatrixA,systB) #On trouve les valeurs des liens.
+
+    def update_rigids(self):
+        '''calcule puis mets à jours les forces des liens rigides'''
+        forces=self.calc_rigids()
+        i=0
+        for link in self.link:
+            if link.rigid:
+                m1=link.mass1
+                m2=link.mass2
+                i1=self.mass.index(m1)
+                i2=self.mass.index(m2)
+                if i1<i2:
+                    epsilon=1
+                else:
+                    epsilon=-1
+                u12=pygame.math.Vector2.normalize(m2.OM-m1.OM)
+                link.force1=epsilon*forces[i]*u12
+                link.force2=-link.force1
+                i+=1
+
+    
     def update(self):
         # Mise à jour des positions des masses
         for mass in self.mass:
@@ -103,6 +192,8 @@ class World():
         if self.boucingbounds:
             self.detect_wall_bounce()
         
+        self.update_rigids()
+
         # Mise à jour des forces dans les liens
         for link in self.link:
             link.update()
