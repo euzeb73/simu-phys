@@ -41,9 +41,13 @@ class Mass():
     def sumforces(self,exceptrigid=False):
         # somme des forces
         force = pygame.math.Vector2(0, 0)
-        #belongtosolid=False
         for link, num in self.linklist:
-            if not exceptrigid:
+            if not exceptrigid: #Si on prend tout on somme tout le tps
+                if num == 1:
+                    force += link.force1
+                elif num == 2:
+                    force += link.force2
+            elif not link.rigid: #Sinon on ne somme que si c'est pas un rigid
                 if num == 1:
                     force += link.force1
                 elif num == 2:
@@ -56,57 +60,9 @@ class Mass():
         self.dv = (dt*force/self.m)
         self.v = self.v+self.dv
     def updateOM(self,dt):
-        """
-        if self.rigidlink and not self.updated:
-            '''Si lien rigid, c'est un solide
-            Evolution calculée pour UNE masse à chaque bout de la tige et pas plus
-            TODO: généralisation... '''
-            x1 = self.rigidlink.mass1.OM
-            x2 = self.rigidlink.mass2.OM
-            m1 = self.rigidlink.mass1.m
-            m2 = self.rigidlink.mass2.m
-            mT = m1+m2
-            xG = m1*x1/mT+m2*x2/mT
-            m1dv1 = m1*self.rigidlink.mass1.dv
-            m2dv2 = m2*self.rigidlink.mass2.dv
-            # Calcul de la nouvelle vG
-            self.rigidlink.vG += m1dv1/mT+m2dv2/mT
-            # calcul du nouveau omega
-            GM1 = x1-xG
-            GM2 = x2-xG
-            self.rigidlink.w += (GM1.cross(m1dv1)+GM2.cross(m2dv2)) / \
-                (m1*norm(GM1)**2+m2*norm(GM2)**2)
-            # Calcul des vitesses v1 et v2
-            self.rigidlink.mass1.v = self.rigidlink.vG - \
-                pygame.math.Vector2(GM1[1]*self.rigidlink.w, -GM1[0]*self.rigidlink.w)
-            self.rigidlink.mass2.v = self.rigidlink.vG - \
-                pygame.math.Vector2(GM2[1]*self.rigidlink.w, -GM2[0]*self.rigidlink.w)
-
-        if self.rigidlink and self.updated:
-            #la masse est reliée à une tige et c'est la deuxième à etre mise à jour
-            self.v-=self.dv #on annule la modif de vitesse due aux forces ce qui redonne la vitesse calculée par le mouvement de la tige
-        """
-
         # Mise à jour de position une fois les 'bonnes vitesses' calculées si besoin       
         self.OM = self.OM+dt*self.v
         
-        # Si on a une tige il ne faut pas qu'elle change de taille.
-        '''
-        if self.rigidlink: # and not self.updated:
-            m1 = self.rigidlink.mass1.m
-            m2 = self.rigidlink.mass2.m
-            mT = m1+m2
-            x1 = self.rigidlink.mass1.OM
-            x2 = self.rigidlink.mass2.OM
-            taille = norm(x2-x1)
-            # Ce qu'il y a à enlever est réparti entre les deux masses prop à la masse de l'autre
-            u = pygame.math.Vector2.normalize(x2-x1)  # uM1M2
-            self.rigidlink.mass1.OM = x1+(m2*(taille-self.rigidlink.length)/mT)*u
-            self.rigidlink.mass2.OM = x2-(m1*(taille-self.rigidlink.length)/mT)*u
-            self.rigidlink.mass1.updated=True
-            self.rigidlink.mass2.updated=True
-        '''
-
     def detect_bounce(self,world,dt):
         '''dt pour remonter les positions d'un cran: avant que ça se touche'''
         '''TODO faire un bon calcul des positions corrigées
@@ -140,7 +96,7 @@ class Mass():
         if collision:
             #on change les vitesses
             # https://physics.stackexchange.com/questions/107648/what-are-the-general-solutions-to-a-hard-sphere-collision
-            #permet de faire les calculs avec les 3 conservartions
+            #permet de faire les calculs avec les 3 conservations
             # en fait la conservation du moment cinétique amène avec celle de l'impulsion que la diff de vitesse pour
             # les masses est colinéaire à l'axe passant par les centres des boules.
             #Après on exprime les nvelles vitesse avec les ancienne+- la même d'impulsion divisée par masse

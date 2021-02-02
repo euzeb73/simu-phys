@@ -54,7 +54,8 @@ class World():
     def restart(self):
         for mass in self.mass:
             mass.restart()
-        for link in self.link:
+        self.update_rigids() #il faut réinitialiser les forces des liens rigid
+        for link in self.link: 
             link.update()
 
     def add_Mass(self, m):
@@ -139,7 +140,7 @@ class World():
                         else: #si i>j c'est la force opposée
                             epsilon=-1
                         colonne=self.rigidsdict[(min(i1,j),max(i1,j))]
-                        systmatrixA[ligne,colonne]=M1M2.dot(M1Mj)/(m1.m*M1Mj.length())
+                        systmatrixA[ligne,colonne]=epsilon*M1M2.dot(M1Mj)/(m1.m*M1Mj.length())
                 for l,num in m2.linklist:
                     if l.rigid:
                         if num==1:
@@ -153,7 +154,7 @@ class World():
                         else: #si i>j c'est la force opposée
                             epsilon=-1
                         colonne=self.rigidsdict[(min(i2,l),max(i2,l))]
-                        systmatrixA[ligne,colonne]+=M1M2.dot(M2Ml)/(m2.m*M2Ml.length())
+                        systmatrixA[ligne,colonne]+=epsilon*M1M2.dot(M2Ml)/(m2.m*M2Ml.length())
                 ligne+=1
         return np.linalg.solve(systmatrixA,systB) #On trouve les valeurs des liens.
 
