@@ -33,20 +33,21 @@ class LinkRigid(Link):
         ''' Classe écrite pour UNE masse à chaque bout de la tige et pas plus
         TODO: généralisation... '''
         self.length = norm(m1.OM-m2.OM)
+        self.force1=pygame.math.Vector2((0,0))
+        self.force2=pygame.math.Vector2((0,0))
         super().__init__(m1, m2)
         self.linkForm.visible=True
         self.rigid = True
 
         self.mass1.rigidlink=self #A enlever ?
-        self.mass2.rigidlink=self
-        self.force1=pygame.math.Vector2((0,0))
-        self.force2=pygame.math.Vector2((0,0))
+        self.mass2.rigidlink=self 
         self.correctCI() #pour réajuster les vitesses si pas compatibes avec tige rigide
         self.update()
 
     def correctCI(self):
         '''Recalcule vG et omega à partir de v1 et v2
-        elimine les problèmes dans les vitesses '''
+        elimine les problèmes dans les vitesses
+        TODO : Eviter ça en initialisant une fois les forces à partir des CI '''
         m1 = self.mass1.m
         m2 = self.mass2.m
         mT = m1+m2
@@ -78,6 +79,7 @@ class LinkRigid(Link):
     
     def update(self):
         pass
+        #PAS trop utile apparemment, si les forces sont bien calculées
         m1 = self.mass1.m
         m2 = self.mass2.m
         mT = m1+m2

@@ -14,21 +14,18 @@ from simphys.app import App
 g=9.81        
 
 
+
 monde=World(10,10)
-# m1=Mass(0.01,[6,6.5])
-# m2=Mass(0.01,[5,5])
-m2=Mass(1,[6.5,5])
-m3=Mass(1,[6.5,4])
-m4=Mass(1,[7,4],0,[-10,0])
-m4.form.color=(0,128,255)
-# t12=LinkRigid(m1,m2)
-t23=LinkRigid(m2,m3)
-# t31=LinkRigid(m3,m1)
-# monde.add_Mass(m1)
-monde.add_Mass(m2)
-monde.add_Mass(m3)
-monde.add_Mass(m4)
+mfixe=Mass(1e20,[5,6.5])
+mfixe.form.visible=False
+# m=Mass(1,[6,6.5])
+m=Mass(1,[6,6.5],0,[0,0])
+tige=LinkRigid(m,mfixe)
+monde.add_Mass(m)
+monde.add_Mass(mfixe)
+monde.disable_gravity([mfixe])
 appli=App()
 appli.add_World(monde)
 appli.set_speed(0.125)
 appli.run()
+quit()

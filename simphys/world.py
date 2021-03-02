@@ -173,15 +173,24 @@ class World():
                 else:
                     epsilon=-1
                 u12=pygame.math.Vector2.normalize(m2.OM-m1.OM)
-                link.force1=epsilon*forces[i]*u12
+                link.force1=epsilon*u12*forces[i]
                 link.force2=-link.force1
                 i+=1
 
     
     def update(self):
+
+        self.update_rigids() #On commence par calculer les forces des liens rigides
+        #Une vérif de calcul des forces
+        T=self.link[1].force1.length()
+        #Pour le pendule
+        OM=self.mass[0].OM-pygame.math.Vector2((5,6.5))
+        T2=9.81*OM.dot(pygame.math.Vector2((0,-1)))/OM.length()+self.mass[0].v.length()**2
+        print(T,T2,T-T2)
+
         # Mise à jour des positions des masses
         for mass in self.mass:
-            mass.updated=False #parce qu'on n'a pas encore updated la position
+            mass.updated=False # INUTILE ?
             mass.updatev(self.dt)
         for mass in self.mass:
             mass.updateOM(self.dt)
@@ -193,8 +202,6 @@ class World():
         if self.boucingbounds:
             self.detect_wall_bounce()
         
-        self.update_rigids()
-
         # Mise à jour des forces dans les liens
         for link in self.link:
             link.update()
