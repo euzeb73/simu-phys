@@ -10,6 +10,15 @@ import pygame
 from .functions import norm
 from .linksforms import LinkForm,SpringForm
 
+#######
+# Linktypes
+# 0 pas de lien
+# 1 LinkRigid
+# 10  LinkcsteF
+# 100 LinkSpring
+# 1000 etc...
+
+
 class Link():
     def __init__(self, m1, m2):
         '''Lien de base'''
@@ -32,6 +41,7 @@ class LinkRigid(Link):
     def __init__(self, m1, m2):
         ''' Classe écrite pour UNE masse à chaque bout de la tige et pas plus
         TODO: généralisation... '''
+        self.linktype=1
         self.length = norm(m1.OM-m2.OM)
         self.force1=pygame.math.Vector2((0,0))
         self.force2=pygame.math.Vector2((0,0))
@@ -39,8 +49,6 @@ class LinkRigid(Link):
         self.linkForm.visible=True
         self.rigid = True
 
-        self.mass1.rigidlink=self #A enlever ?
-        self.mass2.rigidlink=self 
         self.correctCI() #pour réajuster les vitesses si pas compatibes avec tige rigide
         self.update()
 
@@ -90,21 +98,20 @@ class LinkRigid(Link):
         u = pygame.math.Vector2.normalize(x2-x1)  # uM1M2
         self.mass1.OM = x1+(m2*(taille-self.length)/mT)*u
         self.mass2.OM = x2-(m1*(taille-self.length)/mT)*u
-        self.mass1.updated=True
-        self.mass2.updated=True
 
 class LinkCsteF(Link):
     def __init__(self, m1, m2, F):
         '''Lien avec force constante'''
+        self.linktype=10
         self.force1 = np.array(F)
         self.force2 = -self.force1
         super().__init__(m1, m2)
         self.rigid = False
 
-
 class LinkSpring(Link):
     def __init__(self, m1, m2, k, l0):
         '''Lien avec ressort'''
+        self.linktype=100
         self.k = k
         self.l0 = l0
         super().__init__(m1, m2)

@@ -18,8 +18,6 @@ class Mass():
         self.w0 = w
         self.angle = angle
         self.size=0.1
-        self.rigidlink=None
-        self.updated=False #pour voir si on a mis à jour la masse ou pas
         self.linklist = []
         self.collides = True
         if form == 'Circle':
@@ -32,6 +30,18 @@ class Mass():
         self.size=size
         self.form.size=size
 
+    def save_state(self):
+        self.typeinfo=dict()
+        #Attributs de la masse
+        self.typeinfo['m']=self.m
+        self.typeinfo['size']=self.size
+        self.typeinfo['collides']=self.collides
+        self.typeinfo['form']=type(self.form)
+        #Paramètres cinématiques
+        self.state=dict()
+        # self.state['']
+
+    
     def restart(self):
         self.m = self.m0
         self.OM = self.OM0

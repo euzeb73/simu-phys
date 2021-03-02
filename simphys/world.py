@@ -26,27 +26,56 @@ class World():
         #self.screen = 0  # Il faudra mettre la surface pygame dans laquelle on affiche
         #                 # PAS utile en fait ?
         self.dt = 0.1
+        #On ajoute la Terre
         self.gravity = True
         self.earth = Mass(1e24)
         self.earth.form.visible = False
         self.earth.collides=False
+        self.mass.append(self.earth)
         self.boucingbounds=True #(bords rebondissants)
         self.rigidsnb=0
 
-    def prepare(self):
-        '''fait un dictionnaire pour les liens rigides
-        avec en keys les 2 masses et en values
-        le num dans la list '''
-        i=0
-        self.rigidsdict=dict()
-        for link in self.link:
-            if link.rigid:
-                m1=link.mass1
-                m2=link.mass2
-                i1=self.mass.index(m1)
-                i2=self.mass.index(m2)
-                self.rigidsdict[(min(i1,i2),max(i1,i2))]=i #Toujours i<j
-                i+=1
+    def save_state(self):
+        '''fait un dictionnaire avec le contenu du monde'''
+        self.dico=dict()
+        
+        # Maxi 9 liens de même type entre 2 masses (ça devrait pas arriver)
+        
+        mass_list=[]
+        mass_states=[]
+        nmass=len(self.mass)
+        link_mat=np.zeros((nmass,nmass))
+        for i,mass in enumerate(self.mass):
+            mass.save_state()
+            mass_list.append(mass.typeinfo)
+            mass_states.append(mass.state)
+            for link,num in mass.linklist:
+                if num==1:
+                    j=self.mass.index(link.mass2)
+                    num2=2
+                elif num==2:
+                    j=self.mass.index(link.mass1)
+                    num2=1
+                link_mat[i][j]+=link.linktype
+                
+                self.mass[j].linklist.remove((link,num2))
+            mass.linklist=[]
+
+        self.dico['mass']=mass_list
+        self.dico['mass_states']=mass_states
+        self.dico['links']=link_mat
+
+
+        self.load_dico(self.dico)
+
+
+    def load_dico(self,dico):
+        #charger le monde à partir du dico
+        pass
+    
+    def load_world(self):
+        #charger le monde à partir d'un fichier qui construit le dico
+        pass
 
 
 
@@ -190,7 +219,6 @@ class World():
 
         # Mise à jour des positions des masses
         for mass in self.mass:
-            mass.updated=False # INUTILE ?
             mass.updatev(self.dt)
         for mass in self.mass:
             mass.updateOM(self.dt)
