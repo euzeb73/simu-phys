@@ -3,7 +3,6 @@
 import pygame
 
 
-
 class Font():
     def __init__(self, font=None, size=48):
 
@@ -19,70 +18,73 @@ class Font():
 
 
 class Screen():
-    def __init__(self,width=1024,height=768):
-        self.width=width
-        self.height =height
-        self.fullscreen=False
-        self.window=pygame.display.set_mode(
+    def __init__(self, width=1024, height=768):
+        self.width = width
+        self.height = height
+        self.fullscreen = False
+        self.window = pygame.display.set_mode(
             (self.width, self.height))
-        self.worldrect=pygame.Rect(0,0,self.width,self.height) #Rectangle du monde, par défaut toute la fenêtre
-        self.pxpm=125 #pixel per meter échelle de conversion
+        # Rectangle du monde, par défaut toute la fenêtre
+        self.worldrect = pygame.Rect(0, 0, self.width, self.height)
+        self.pxpm = 125  # pixel per meter échelle de conversion
         self.prepare_messages()
 
-   
     def prepare_messages(self):
-        self.fontbig = Font('timesnewroman',36)  # initialise la police Grande
+        self.fontbig = Font('timesnewroman', 36)  # initialise la police Grande
         self.fontsmall = Font('segoescript', 10)  # initialise la police petite
-        self.fontmedium = Font('segoescript', 24) #la moyenne
-          # Prépare les affichages text
+        self.fontmedium = Font('segoescript', 24)  # la moyenne
+        # Prépare les affichages text
         self.fontbig.addtext('Pause')
         self.fontbig.addtext('Press ESC to QUIT', 'Quit')
         self.fontbig.addtext('Press R to RESTART', 'Restart')
-        self.fontmedium.addtext('Press F to switch to FULLSCREEN','Fullscreen',(255,0,128))
+        self.fontmedium.addtext(
+            'Press F to switch to FULLSCREEN', 'Fullscreen', (255, 0, 128))
         self.fontsmall.addtext('START/PAUSE : ENTER', 'Enter', (0, 0, 255))
         self.fontsmall.addtext('Speed up: KUP', 'Up', (0, 0, 255))
         self.fontsmall.addtext('Speed down: KDOWN', 'Down', (0, 0, 255))
-    
-    def change_speed(self,speed):
+
+    def change_speed(self, speed):
         self.fontsmall.addtext('Speed {}'.format(
             speed), 'Speed', (0, 0, 255))
 
-
     def switch_full(self):
         if self.fullscreen:
-            flag=0
-            self.fontmedium.addtext('Press F to switch to FULLSCREEN','Fullscreen',(255,0,128))
+            flag = 0
+            self.fontmedium.addtext(
+                'Press F to switch to FULLSCREEN', 'Fullscreen', (255, 0, 128))
         else:
-            flag=pygame.FULLSCREEN
-            self.fontmedium.addtext('Press F to switch to WINDOW mode','Fullscreen',(255,0,128))
-        self.fullscreen=not(self.fullscreen)
+            flag = pygame.FULLSCREEN
+            self.fontmedium.addtext(
+                'Press F to switch to WINDOW mode', 'Fullscreen', (255, 0, 128))
+        self.fullscreen = not(self.fullscreen)
         return pygame.display.set_mode(
-            (self.width, self.height),flag)
-    def set_world_size(self,world):
+            (self.width, self.height), flag)
+
+    def set_world_size(self, world):
         ''' Ajuste les dimensions en pixels du monde par rapport aux dimensions de la fenêtre'''
         if world.sizex >= world.sizey*4/3:  # bon rectangle
             self.pxpm = self.width/world.sizex  # Afficher sur toute la largeur
             yshift = int((self.height-world.sizey*self.pxpm)/2)
             xshift = 0
-            width=self.width
-            height=int(world.sizey*self.pxpm)
+            width = self.width
+            height = int(world.sizey*self.pxpm)
         else:
             self.pxpm = self.height/world.sizey  # Afficher sur toute la hauteur
             yshift = 0
             xshift = int((self.width-world.sizex*self.pxpm)/2)
-            width=int(world.sizex*self.pxpm)
-            height=self.height
-        
+            width = int(world.sizex*self.pxpm)
+            height = self.height
+
         # le rectangle du monde
         self.worldrect = pygame.Rect(
             xshift, yshift, width, height)
 
-    def update(self,world,paused=False): 
+    def update(self, world, paused=False):
 
         # Tuple for filling display... Current is lightgrey
         self.window.fill((150, 150, 150))
-        
-        #Voir comment on va dessiner le monde
+
+        # Voir comment on va dessiner le monde
         #  pour l'instant ancienne méthode
         # mais il faut changer ce bazar
         world.draw(self)
@@ -90,9 +92,9 @@ class Screen():
         if paused:
             self.affich_menu()
         pygame.display.update()
-    
+
     def affich_menu(self):
-        
+
         # Tailles du monde:
         centerx = self.worldrect.centerx
         centery = self.worldrect.centery
@@ -104,7 +106,7 @@ class Screen():
         surface = self.fontbig.textdic['Pause']
         w, h = surface.get_size()
         self.window.blit(surface, (centerx-w//2, centery-h//2))
-        h2=h
+        h2 = h
         surface = self.fontmedium.textdic['Fullscreen']
         w, h = surface.get_size()
         self.window.blit(surface, (centerx-w//2, centery+h2))
@@ -116,7 +118,7 @@ class Screen():
         self.window.blit(surface, (centerx-w//2, top+h))
 
     def affich_cmd(self):
-        
+
         # Tailles du monde:
         centerx = self.worldrect.centerx
         centery = self.worldrect.centery
@@ -138,18 +140,13 @@ class Screen():
         w, h = surface.get_size()
         self.window.blit(surface, topleft)
 
-
-
-    def mtopx(self,dinm):
+    def mtopx(self, dinm):
         ''' Convertit les distances en m vers des pixels'''
         return int(dinm*self.pxpm)
 
-
-    def OMtopx(self,OM):
+    def OMtopx(self, OM):
         '''Convertit les positions en m vers des coords en pixels
         Retourne un tuple '''
-        xshift=self.worldrect[0]
-        ymax=self.worldrect[1]+self.worldrect[3]
+        xshift = self.worldrect[0]
+        ymax = self.worldrect[1]+self.worldrect[3]
         return (self.mtopx(OM[0])+xshift, ymax-self.mtopx(OM[1]))
-
-

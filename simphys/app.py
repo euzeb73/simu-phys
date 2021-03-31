@@ -9,14 +9,13 @@ from .screen import Screen
 from .world import World
 
 
-
 class App():
     def __init__(self, FPS=60):
         pygame.init()
         self.FPS = FPS
         self.clock = pygame.time.Clock()
-        self.world = World(1,1)  # à ajouter plus tard avec add_World
-        self.screen=Screen() #la fenêtre d'affichage
+        self.world = World(1, 1)  # à ajouter plus tard avec add_World
+        self.screen = Screen()  # la fenêtre d'affichage
         self.set_speed(1)  # nb de fois la vitesse réelle
 
     def add_World(self, world):
@@ -30,7 +29,7 @@ class App():
         self.speed = speed
         self.world.dt = self.speed/self.FPS
         self.screen.change_speed(self.speed)
-        
+
     def affiche_cmd(self):
         pass
 
@@ -38,7 +37,7 @@ class App():
         pass
 
     def run(self):
-        
+
         stopped = False
         anim = False
         paused = True
@@ -71,6 +70,6 @@ class App():
                 self.screen.update(self.world)
 
             if paused:
-                self.screen.update(self.world,paused)
+                self.screen.update(self.world, paused)
             self.clock.tick(self.FPS)
         pygame.quit()

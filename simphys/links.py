@@ -8,16 +8,19 @@ Created on Mon Dec 28 14:16:59 2020
 import numpy as np
 import pygame
 from .functions import norm
-from .linksforms import LinkForm,SpringForm
+from .linksforms import LinkForm, SpringForm
 
 #######
-# Linktypes
+# Linktypes     #### A ENLEVER !
 # 0 pas de lien
 # 1 LinkRigid
 # 10  LinkcsteF
 # 100 LinkSpring
 # 1000 etc...
 
+
+
+# TODO enlever les array et mettre des vec2 pygame
 
 class Link():
     def __init__(self, m1, m2):
@@ -28,8 +31,14 @@ class Link():
         self.mass1.linklist.append((self, 1))
         self.mass2.linklist.append((self, 2))
         self.rigid = False
-        self.linkForm=LinkForm(self)
+        self.linkForm = LinkForm(self)
+        self.init_dict()
         self.update()
+
+    def init_dict(self):
+        self.dico = dict()
+        self.dico['type'] = Link
+        self.dico['visible'] = False
 
     def update(self):
         pass
@@ -37,25 +46,33 @@ class Link():
     def draw(self, screen):
         self.linkForm.draw(screen)
 
+
 class LinkRigid(Link):
     def __init__(self, m1, m2):
         ''' Classe écrite pour UNE masse à chaque bout de la tige et pas plus
         TODO: généralisation... '''
-        self.linktype=1
+        self.linktype = 1
         self.length = norm(m1.OM-m2.OM)
-        self.force1=pygame.math.Vector2((0,0))
-        self.force2=pygame.math.Vector2((0,0))
+        self.force1 = pygame.math.Vector2((0, 0))
+        self.force2 = pygame.math.Vector2((0, 0))
         super().__init__(m1, m2)
-        self.linkForm.visible=True
+        self.linkForm.visible = True
         self.rigid = True
 
-        self.correctCI() #pour réajuster les vitesses si pas compatibes avec tige rigide
+        self.correctCI()  # pour réajuster les vitesses si pas compatibes avec tige rigide
         self.update()
+
+    def init_dict(self):
+        self.dico = dict()
+        self.dico['type'] = LinkRigid
+        self.dico['visible'] = True
 
     def correctCI(self):
         '''Recalcule vG et omega à partir de v1 et v2
         elimine les problèmes dans les vitesses
         TODO : Eviter ça en initialisant une fois les forces à partir des CI '''
+        # pour l'instant on ne le fait pas
+        pass
         m1 = self.mass1.m
         m2 = self.mass2.m
         mT = m1+m2
@@ -84,10 +101,10 @@ class LinkRigid(Link):
         # Recalcule vG et w
         self.vG = m1*v1/mT+m2*v2/mT
         self.w = (v2.dot(uortho)-v1.dot(uortho))/(norm(x1-xG)+norm(x2-xG))
-    
+
     def update(self):
         pass
-        #PAS trop utile apparemment, si les forces sont bien calculées
+        # PAS trop utile apparemment, si les forces sont bien calculées
         m1 = self.mass1.m
         m2 = self.mass2.m
         mT = m1+m2
@@ -99,24 +116,39 @@ class LinkRigid(Link):
         self.mass1.OM = x1+(m2*(taille-self.length)/mT)*u
         self.mass2.OM = x2-(m1*(taille-self.length)/mT)*u
 
+
 class LinkCsteF(Link):
-    def __init__(self, m1, m2, F):
+    def __init__(self, m1, m2, F=[0,0]):
         '''Lien avec force constante'''
-        self.linktype=10
-        self.force1 = np.array(F)
+        self.linktype = 10
+        self.force1 = pygame.math.Vector2(F)
         self.force2 = -self.force1
         super().__init__(m1, m2)
         self.rigid = False
 
+    def init_dict(self):
+        self.dico = dict()
+        self.dico['type'] = LinkCsteF
+        self.dico['visible'] = False
+        self.dico['force'] = self.force1
+
+
 class LinkSpring(Link):
-    def __init__(self, m1, m2, k, l0):
+    def __init__(self, m1, m2, k=1, l0=1):
         '''Lien avec ressort'''
-        self.linktype=100
+        self.linktype = 100
         self.k = k
         self.l0 = l0
         super().__init__(m1, m2)
-        self.linkForm=SpringForm(self)
+        self.linkForm = SpringForm(self)
         self.rigid = False
+
+    def init_dict(self):
+        self.dico = dict()
+        self.dico['type'] = LinkSpring
+        self.dico['visible'] = True
+        self.dico['k'] = self.k
+        self.dico['l0'] = self.l0
 
     def update(self):
         x1 = self.mass1.OM

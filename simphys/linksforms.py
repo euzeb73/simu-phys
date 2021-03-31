@@ -3,26 +3,30 @@ import pygame
 import numpy as np
 from .functions import norm
 
-class LinkForm():
-    def __init__(self,link,color=(0,0,0)):
-        self.link=link
-        self.color=color
-        self.visible=False
-        self.width=3
 
-    def draw(self,screen):
+class LinkForm():
+    def __init__(self, link, color=(0, 0, 0)):
+        self.link = link
+        self.color = color
+        self.visible = False
+        self.width = 3
+
+    def draw(self, screen):
         if self.visible:
             start = screen.OMtopx(self.link.mass1.OM)
             stop = screen.OMtopx(self.link.mass2.OM)
-            pygame.draw.line(screen.window, self.color, start, stop, self.width)
+            pygame.draw.line(screen.window, self.color,
+                             start, stop, self.width)
+
 
 class SpringForm(LinkForm):
-    def __init__(self,link,color=(0,0,0)):
-        super().__init__(link,color)
-        self.ltot=2*self.link.l0
-        self.nseg=20
-        self.visible=True
-    def draw(self,screen):
+    def __init__(self, link, color=(0, 0, 0)):
+        super().__init__(link, color)
+        self.ltot = 2*self.link.l0
+        self.nseg = 20
+        self.visible = True
+
+    def draw(self, screen):
         '''Dessine un ressort'''
         if self.visible:
             ltot = self.ltot  # Longueur du ressort entièrement détendu
